@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Germany uses a variable-length ndc code, thus we use a separate file to not let countries.rb explode.
 #
 # Note: Germany uses a variable ndc format from length 2 to 5.
@@ -4019,8 +4021,9 @@ mobile_4digits = [
 '1520', # Vodafone
 '1521', # Lycamobile
 '1522', # Vodafone
+'1523', # Vodafone
 '1570', # vistream
-'1527', # E-Plus
+'1577', # E-Plus
 '1672', # Dolphin Telecom
 ]
 

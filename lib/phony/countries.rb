@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# frozen_string_literal: true
+
 # All countries, ordered by country code.
 #
 # Definitions are in the format:
@@ -67,7 +69,7 @@ Phony.define do
   country '20', one_of('800')    >> split(7..7) | # Egypt toll free
                 one_of('3')      >> split(7..7) | # Alexandria
                 one_of('2')      >> split(8..8) | # Cairo/Giza
-                one_of('10', '11', '12') >> split(8..8) | # the 3 mobile operators
+                one_of('10', '11', '12', '15') >> split(8..8) | # the 4 mobile operators
                 fixed(2)         >> split(7..7) # all the other 24 provinces
 
   # South Africa.
@@ -184,11 +186,13 @@ Phony.define do
   # country '49' # Germany, see special file.
 
   # Peru.
-  #
+  # Note: https://en.wikipedia.org/wiki/Telephone_numbers_in_Peru
+  # Note: https://www.numberingplans.com/?page=plans&sub=phonenr&alpha_2_input=PE
   country '51',
           one_of('103', '105') >> split(3,3) | # Service.
-          one_of('1', '9')     >> split(4,4) | # Lima and mobile.
-          fixed(2)             >> split(4,4)   # 2-digit NDCs.
+          one_of('9')          >> split(4,4) | # Mobile.
+          one_of('1')          >> split(3,4) | # Lima.
+          fixed(2)             >> split(3,3)   # 2-digit NDCs.
 
   # Mexico.
   #
@@ -209,14 +213,7 @@ Phony.define do
           fixed(3)                           >> split(7)   # 3-digit NDCs
 
   # Argentine Republic.
-  #
-  country '54',
-          one_of('11', '911') >> split(4,4) | # Fixed & Mobile
-          match(/^(22[0137]|237|26[14]|29[179]|34[1235]|35[138]|38[1578])/) >> split(3,4) |        # Fixed
-          match(/^(922[0137]|9237|926[14]|929[179]|934[1235]|935[138]|938[1578])/) >> split(3,4) | # Mobile
-          match(/^(9\d{4})/) >> split(2,4) | # Mobile
-          match(/^([68]\d{2})/) >> split(3,4) | # Service
-          fixed(4) >> split(2,4) # Fixed
+  # country '54' # argentina, see special file.
 
   # Brazil (Federative Republic of).
   # http://en.wikipedia.org/wiki/Telephone_numbers_in_Brazil
@@ -262,7 +259,7 @@ Phony.define do
     match(/\A(2)\d{10}\z/) >> split(10) |
     one_of('2') >> split(7) |
     # mobile
-    match(/\A(9\d\d)\d{7}\z/) >> split(7) |
+    match(/\A([89]\d\d)\d{7}\z/) >> split(7) |
     match(/\A(9\d\d)\d+\z/) >> split(6) |
     #
     fixed(2) >> split(7)
@@ -491,8 +488,9 @@ Phony.define do
               /\A20\d+\z/ => [2,3,4], # Telecom Malagasy (Telma)
               /\A23\d+\z/ => [2,3,4], # Digitel
               /\A30\d+\z/ => [2,3,4], # mobile Madamobil (CDMA2000)
-              /\A31\d+\z/ => [2,3,4], # mobile Sacel
+              /\A31\d+\z/ => [2,3,4], # mobile Airtel Madagascar
               /\A32\d+\z/ => [2,3,4], # mobile Orange Madagascar
+              /\A33\d+\z/ => [2,3,4], # mobile Airtel Madagascar
               /\A34\d+\z/ => [2,3,4], # mobile Telecom Malagasy (Telma)
               /\A5\d+\z/ => [3,3,3],  # pager
               /\A22\d+\z/ => [3,3,3], # satellite GULFSAT Téléphonie
@@ -678,9 +676,28 @@ Phony.define do
 
   # Bulgaria
   #
+  # Note: https://www.numberingplans.com/?page=plans&sub=phonenr&alpha_2_input=BG
+  # Note: https://en.wikipedia.org/wiki/Telephone_numbers_in_Bulgaria
   country '359',
           trunk('0') |
-          fixed(2) >> split(3,2,2) # Bulgaria
+          match(/^(2)\d{6}$/) >> split(3,3)  | # Landline Sofia (optional last digit)
+          match(/^(2)\d{7}$/) >> split(3,4)  | # Landline Sofia (optional last digit)
+          match(/^(30|31|33|36|37|39|41|43\d|45|47|51|53|55|57|59)\d{5}$/) >> split(5) |
+          match(/^(30|31|32|33|34|35|36|37|38|39|41|42|44|45|46|47|51|52|53|54|55|56|57|58|59)\d{6}$/) >> split(2,4) |
+
+          match(/^(60|61|63|65|66|69)\d{5}$/) >> split(5) |
+          match(/^(60|61|62|63|64|65|66|68|69)\d{6}$/) >> split(6) |
+
+          match(/^(700|701|703|704|705|706|707|708|709)\d{5}$/) >> split(5) |
+          match(/^(701|702|703|704|705|706|707|708|709)\d{4}$/) >> split(4) |
+
+          match(/^(71|72|74|75|77)\d{5}$/) >> split(5) |
+          match(/^(71|72|73|74|75|76|77|78|79)\d{6}$/) >> split(6) |
+
+          match(/^(80\d|81|91|93|95|97)\d{5}$/) >> split(5) |
+          match(/^(81|82|84|86)\d{6}$/) >> split(6) |
+          match(/^(87|88|89)\d{7}$/) >> split(4,3) |
+          match(/^(90|91|92|93|94|95|96|97|98\d|99\d)\d{6}$/) >> split(6)
 
   # Lithuania
   #
@@ -732,7 +749,13 @@ Phony.define do
 
   # country '382' # Montenegro, see special file
 
-  country '383', todo # -
+  # Kosovo
+  #
+  # Note: https://en.wikipedia.org/wiki/Telephone_numbers_in_Kosovo
+  country '383',
+          trunk('0') |
+          fixed(2) >> split(3,3)
+
   country '384', todo # -
 
   # country '385' # Croatia, see special file.
@@ -887,7 +910,14 @@ Phony.define do
           one_of('115') >> split(4,4) | # voicemail (mobile)
           one_of(%w(28 29)) >> split(3,2) | # pager
           one_of(%w(16 18)) >> split(3,2) | # ISP
-          one_of(%w(71 72 73 76)) >> split(3,3) | # mobile
+          one_of(%w(70 71 72 74 75 76 78 79)) >> split(3,3) | # mobile
+          one_of(%w(731 732 733 734 735 736 738 739)) >> split(2,3) | # mobile
+          one_of(%w(770)) >> split(2,3) | # wireless geographic; Port Moresby, National Capital District
+          one_of(%w(771)) >> split(2,3) | # wireless geographic; Momase region
+          one_of(%w(772)) >> split(2,3) | # wireless geographic; Highlands region
+          one_of(%w(7730)) >> split(1,3) | # wireless geographic; Southern region
+          one_of(%w(774)) >> split(2,3) | # wireless geographic; Islands region
+          one_of(%w(775)) >> split(2,3) | # mobile
           one_of(%w(80 81 82 83)) >> split(3,3) | # freephone
           one_of(%w(90 91 92 93)) >> split(3,3) | # geographic, ISDN
           one_of(%w(3 4 5 6 7 8 9)) >> split(3,3) # geographic
@@ -990,6 +1020,7 @@ Phony.define do
   # Hong Kong, China
 
   country '852',
+          match(/^(800)\d+$/) >> split(2, 4) |
           none >> split(4,4)
 
   # Macao, China
@@ -1024,7 +1055,10 @@ Phony.define do
   # Bangladesh (People's Republic of)
   #  country '880' # see special file
 
-  country '881', todo # International Mobile, shared code
+  # Global Mobile Satellite System (i.e. Iridium, Globalstar, etc)
+  #  https://www.numberingplans.com/?page=plans&sub=phonenr&alpha_2_input=QM
+  country '881', fixed(1) >> split(3,5)
+
   country '882', todo # International Networks, shared code
   country '883', todo # -
   country '884', todo # -
@@ -1135,6 +1169,7 @@ Phony.define do
           one_of(%w(500 700 900)) >> split(3,3) | # premium rate
           one_of('800') >> matched_split(
               /\A\d{2}\z/ => [2],
+              /\A\d{7}\z/ => [2,3,2],
               /\A\d+\z/ => [2,3,4]) | # freephone
           one_of(%w(50 52 54 55 56 58)) >> split(3,4) | # mobile
           one_of(%w(2 3 4 6 7 9)) >> split(3,4) |
@@ -1143,9 +1178,9 @@ Phony.define do
   # Israel (State of) (also works for numbers in Palestinian territories)
   country '972',
     trunk('0') |
-    one_of('1')                            >> split(3,3,3) | # special numbers
-    one_of('2', '3', '4', '8', '9')        >> split(3,4)   | # 1 digit ndc
-    match(/^(5[023456789]|7[23467])\d+$/)  >> split(3,4)     # 2 digit ndc
+    one_of('1')                                 >> split(3,3,3) | # special numbers
+    one_of('2', '3', '4', '8', '9')             >> split(3,4)   | # 1 digit ndc
+    match(/^(5[012345689]|7[234679])\d+$/)      >> split(3,4)     # 2 digit ndc
 
   country '973', none >> split(4,4..4) # Bahrain (Kingdom of) http://www.itu.int/oth/T0202000011/en
 
