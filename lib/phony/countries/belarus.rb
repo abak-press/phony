@@ -115,9 +115,9 @@ ndcs_with_7_subscriber_digits = %w(17 25 29 33 44)
 Phony.define do
   country '375',
           trunk('80?') |
-          one_of(ndcs_with_5_subscriber_digits) >> split(5) |
-          one_of(ndcs_with_6_subscriber_digits) >> split(6) |
-          one_of(ndcs_with_7_subscriber_digits) >> split(7) |
+          one_of(ndcs_with_5_subscriber_digits) >> split(1, 2, 2) |
+          one_of(ndcs_with_6_subscriber_digits) >> split(2, 2, 2) |
+          one_of(ndcs_with_7_subscriber_digits) >> split(3, 2, 2) |
           # not available from abroad
           one_of(%w(600)) >> split(3) |
           one_of(%w(606 777 801 803 805 810 902)) >> split(7) |
@@ -126,6 +126,7 @@ Phony.define do
           # Assigned to Beltelecom - not available from abroad
           match(/\A(800)\d{3}\z/) >> split(3) |
           match(/\A(800)\d{4}\z/) >> split(4) |
-          match(/\A(800)\d{7}\z/) >> split(7)
+          match(/\A(800)\d{7}\z/) >> split(7),
+          local_space: :-
 end
 
